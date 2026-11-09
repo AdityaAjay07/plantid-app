@@ -37,7 +37,7 @@ npm run dev
 ## Deploying to Vercel
 1. Push to GitHub
 2. Import repo on [vercel.com](https://vercel.com)
-3. Add `VITE_GEMINI_API_KEY` in Vercel environment variables
+3. Add `GEMINI_API_KEY` in Vercel environment variables
 4. Deploy — done!
 
 ## License
