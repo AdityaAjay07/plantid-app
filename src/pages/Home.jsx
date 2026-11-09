@@ -7,7 +7,6 @@ import PlantOfDay from '../components/PlantOfDay'
 import LeftPanel from '../components/LeftPanel'
 import RightPanel from '../components/RightPanel'
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
 
 export default function Home({ history, streak, addToHistory, showToast }) {
   const [image, setImage] = useState(null)
@@ -56,19 +55,14 @@ export default function Home({ history, streak, addToHistory, showToast }) {
 Return only valid JSON, no markdown, no extra text.`
 
     try {
-      const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: mimeType, data: imageBase64 } }] }]
-          })
-        }
-      )
+      const resp = await fetch('/api/identify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, mimeType, imageBase64 })
+      })
       const data = await resp.json()
-      if (!resp.ok) throw new Error(data.error?.message || 'API error')
-      let raw = data.candidates?.[0]?.content?.parts?.[0]?.text || ''
+      if (!resp.ok) throw new Error(data.error || 'API error')
+      let raw = data.text || ''
       raw = raw.replace(/```json|```/g, '').trim()
       const plant = JSON.parse(raw)
       setResult(plant)
